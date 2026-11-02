@@ -213,6 +213,7 @@ The protocol URL embeds every styling option:
 ```text
 openradar://radar/{timestamp}/{z}/{x}/{y}/{color}/{smooth}_{snow}.png?…
 openradar://satellite/{timestamp}/{z}/{x}/{y}
+openradar://coverage/0/{z}/{x}/{y}
 ```
 
 This is deliberate: a palette or extension change produces a different cache
@@ -284,6 +285,7 @@ never fires. That fallback also shows a warning toast.
 | Layer | Type | Source | Notes |
 | --- | --- | --- | --- |
 | Satellite | raster | `openradar://satellite/...` | below radar |
+| Coverage | raster | `openradar://coverage/...` | above satellite, below radar |
 | Radar | raster | `openradar://radar/...` | `raster-fade-duration: 0` |
 | Alerts fill | fill | GeoJSON | severity colour, 17 % opacity |
 | Alerts outline | line | GeoJSON | zoom-scaled width |

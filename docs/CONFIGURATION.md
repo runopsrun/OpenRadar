@@ -52,9 +52,11 @@ Zustand `persist` wraps the state:
     "customHost": "http://localhost:8080",
     "radarEnabled": true,
     "satelliteEnabled": false,
+    "coverageEnabled": false,
     "alertsEnabled": false,
     "radarOpacity": 0.85,
     "satelliteOpacity": 0.6,
+    "coverageOpacity": 0.5,
     "colorScheme": 2,
     "smooth": true,
     "snow": false,
@@ -131,9 +133,11 @@ URL normalisation rules:
 | --- | --- | --- | --- | --- |
 | `radarEnabled` | boolean | `true` | — | Layers → Radar |
 | `satelliteEnabled` | boolean | `false` | — | Layers → Satellite |
+| `coverageEnabled` | boolean | `false` | — | Layers → Radar coverage |
 | `alertsEnabled` | boolean | `false` | — | Layers → Weather alerts |
 | `radarOpacity` | number | `0.85` | 0.15–1.0 (persisted clamp 0.1–1.0) | Radar opacity |
 | `satelliteOpacity` | number | `0.6` | 0.15–1.0 (persisted clamp 0.1–1.0) | Satellite opacity |
+| `coverageOpacity` | number | `0.5` | 0.15–1.0 (persisted clamp 0.1–1.0) | Coverage opacity |
 | `colorScheme` | number | `2` | 0–255; must exist in metadata or nearest fallback | Radar colour scheme |
 | `smooth` | boolean | `true` | — | Smoothing |
 | `snow` | boolean | `false` | — | Snow mask |

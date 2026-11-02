@@ -31,9 +31,11 @@ export interface AppSettings {
   /* Overlays */
   radarEnabled: boolean;
   satelliteEnabled: boolean;
+  coverageEnabled: boolean;
   alertsEnabled: boolean;
   radarOpacity: number;
   satelliteOpacity: number;
+  coverageOpacity: number;
   colorScheme: number;
   smooth: boolean;
   snow: boolean;

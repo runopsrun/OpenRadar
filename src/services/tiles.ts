@@ -144,6 +144,9 @@ export function satelliteProtocolUrlTemplate(timestamp: number): string {
   return `openradar://satellite/${timestamp}/{z}/{x}/{y}`;
 }
 
+export const COVERAGE_PROTOCOL_URL_TEMPLATE =
+  "openradar://coverage/0/{z}/{x}/{y}";
+
 /** Remote LibreWXR/RainViewer URL for a concrete tile. */
 export function remoteRadarTileUrl(
   options: RadarTileRequest,
@@ -196,6 +199,12 @@ export function resolveRemoteTileUrl(protocolUrl: string): string | null {
     const [timestamp, z, x, y] = segments;
     if (!timestamp || !z || !x || !y) return null;
     return `${tileHost}/v2/satellite/${timestamp}/${TILE_SIZE}/${z}/${x}/${y}/0/0_0.png`;
+  }
+
+  if (url.host === "coverage") {
+    const [, z, x, y] = segments;
+    if (!z || !x || !y) return null;
+    return `${tileHost}/v2/coverage/0/${TILE_SIZE}/${z}/${x}/${y}/0/0_0.png`;
   }
 
   return null;

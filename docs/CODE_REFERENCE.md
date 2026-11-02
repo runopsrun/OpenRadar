@@ -115,8 +115,8 @@ interface SavedPlace { id: string; name: string; latitude: number; longitude: nu
 interface AppSettings {
   theme; baseMapId;
   dataSourceId; customHost;
-  radarEnabled; satelliteEnabled; alertsEnabled;
-  radarOpacity; satelliteOpacity; colorScheme; smooth; snow;
+  radarEnabled; satelliteEnabled; coverageEnabled; alertsEnabled;
+  radarOpacity; satelliteOpacity; coverageOpacity; colorScheme; smooth; snow;
   lightning; stormCells; motionArrows;
   animationSpeedMs; loop; includeNowcast; autoRefreshMinutes;
   defaultView; recentPlaces;

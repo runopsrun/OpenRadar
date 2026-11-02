@@ -8,7 +8,12 @@ All notable changes to OpenRadar are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet. See [Roadmap](ROADMAP.md) for planned work.
+### Added
+
+- Radar coverage overlay (`/v2/coverage`) with toggle and opacity control in
+  the Layers panel; LibreWXR sources only.
+
+See [Roadmap](ROADMAP.md) for planned work.
 
 ---
 

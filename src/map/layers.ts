@@ -15,6 +15,8 @@ export const RADAR_SOURCE_ID = "openradar-radar";
 export const RADAR_LAYER_ID = "openradar-radar-layer";
 export const SATELLITE_SOURCE_ID = "openradar-satellite";
 export const SATELLITE_LAYER_ID = "openradar-satellite-layer";
+export const COVERAGE_SOURCE_ID = "openradar-coverage";
+export const COVERAGE_LAYER_ID = "openradar-coverage-layer";
 export const ALERTS_SOURCE_ID = "openradar-alerts";
 export const ALERTS_FILL_LAYER_ID = "openradar-alerts-fill";
 export const ALERTS_LINE_LAYER_ID = "openradar-alerts-line";
@@ -53,6 +55,7 @@ export function enforceOverlayOrder(map: MapLibreMap): void {
   // Bottom-to-top order. Each moveLayer goes immediately below labels.
   for (const id of [
     SATELLITE_LAYER_ID,
+    COVERAGE_LAYER_ID,
     RADAR_LAYER_ID,
     ALERTS_FILL_LAYER_ID,
     ALERTS_LINE_LAYER_ID,
@@ -160,6 +163,51 @@ export function syncSatelliteLayer(
     map.addLayer(layer, firstSymbolLayerId(map));
   } else {
     map.setPaintProperty(SATELLITE_LAYER_ID, "raster-opacity", input.opacity);
+  }
+
+  enforceOverlayOrder(map);
+}
+
+export interface CoverageLayerInput {
+  enabled: boolean;
+  tileUrlTemplate: string;
+  opacity: number;
+}
+
+export function syncCoverageLayer(
+  map: MapLibreMap,
+  input: CoverageLayerInput,
+): void {
+  if (!input.enabled) {
+    removeLayerAndSource(map, COVERAGE_LAYER_ID, COVERAGE_SOURCE_ID);
+    return;
+  }
+
+  if (!map.getSource(COVERAGE_SOURCE_ID)) {
+    map.addSource(COVERAGE_SOURCE_ID, {
+      type: "raster",
+      tiles: [input.tileUrlTemplate],
+      tileSize: 256,
+      minzoom: 0,
+      maxzoom: 12,
+      attribution: "Radar coverage © LibreWXR",
+    });
+  }
+
+  if (!map.getLayer(COVERAGE_LAYER_ID)) {
+    const layer: RasterLayerSpecification = {
+      id: COVERAGE_LAYER_ID,
+      type: "raster",
+      source: COVERAGE_SOURCE_ID,
+      paint: {
+        "raster-opacity": input.opacity,
+        "raster-fade-duration": 0,
+        "raster-resampling": "linear",
+      },
+    };
+    map.addLayer(layer, firstSymbolLayerId(map));
+  } else {
+    map.setPaintProperty(COVERAGE_LAYER_ID, "raster-opacity", input.opacity);
   }
 
   enforceOverlayOrder(map);

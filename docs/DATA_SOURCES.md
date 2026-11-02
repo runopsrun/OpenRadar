@@ -116,6 +116,14 @@ The final path segments (`/0/0_0.png`) are fixed in the current API. Do not
 insert `.png` after `{y}` in the template; that produces a malformed path and an
 HTTP error.
 
+**Coverage tiles**
+
+```text
+GET /v2/coverage/0/{size}/{z}/{x}/{y}/0/0_0.png
+```
+
+Static tile layer showing where radar data exists; not time-dependent.
+
 **Alerts**
 
 ```text

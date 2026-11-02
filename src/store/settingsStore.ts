@@ -21,9 +21,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
   radarEnabled: true,
   satelliteEnabled: false,
+  coverageEnabled: false,
   alertsEnabled: false,
   radarOpacity: 0.85,
   satelliteOpacity: 0.6,
+  coverageOpacity: 0.5,
   colorScheme: 2,
   smooth: true,
   snow: false,
@@ -117,12 +119,18 @@ function sanitizePersisted(value: unknown): Partial<AppSettings> {
   if (typeof raw.satelliteEnabled === "boolean") {
     out.satelliteEnabled = raw.satelliteEnabled;
   }
+  if (typeof raw.coverageEnabled === "boolean") {
+    out.coverageEnabled = raw.coverageEnabled;
+  }
   if (typeof raw.alertsEnabled === "boolean") out.alertsEnabled = raw.alertsEnabled;
   if (typeof raw.radarOpacity === "number") {
     out.radarOpacity = clamp(raw.radarOpacity, 0.1, 1);
   }
   if (typeof raw.satelliteOpacity === "number") {
     out.satelliteOpacity = clamp(raw.satelliteOpacity, 0.1, 1);
+  }
+  if (typeof raw.coverageOpacity === "number") {
+    out.coverageOpacity = clamp(raw.coverageOpacity, 0.1, 1);
   }
   if (typeof raw.colorScheme === "number" && Number.isFinite(raw.colorScheme)) {
     out.colorScheme = Math.round(clamp(raw.colorScheme, 0, 255));
@@ -186,9 +194,11 @@ export const useSettingsStore = create<SettingsStore>()(
         customHost: state.customHost,
         radarEnabled: state.radarEnabled,
         satelliteEnabled: state.satelliteEnabled,
+        coverageEnabled: state.coverageEnabled,
         alertsEnabled: state.alertsEnabled,
         radarOpacity: state.radarOpacity,
         satelliteOpacity: state.satelliteOpacity,
+        coverageOpacity: state.coverageOpacity,
         colorScheme: state.colorScheme,
         smooth: state.smooth,
         snow: state.snow,

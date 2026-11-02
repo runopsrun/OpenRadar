@@ -50,6 +50,7 @@ counts, alert coverage, and timestamps will differ from what you see.
 - **Radar options** — opacity, smoothing, snow mask.
 - **Satellite overlay** — NOAA GMGSI infrared imagery, automatically matched to
   the radar frame's time.
+- **Radar coverage overlay** — shows where LibreWXR has radar data.
 - **Weather alerts** — WMO CAP alerts as a severity-coloured GeoJSON overlay,
   with clickable detail popups and viewport refresh.
 - **LibreWXR tile extras** — storm motion arrows, storm cells, and lightning
@@ -204,6 +205,8 @@ device on the network; see `vite.config.ts`.
 
 - **Radar** — toggle, colour scheme, opacity, smoothing, snow mask.
 - **Satellite** — NOAA GMGSI overlay and opacity.
+- **Radar coverage** — toggle and opacity; shows where radar data exists
+  (LibreWXR sources only).
 - **Weather alerts** — CAP polygons; click a polygon for details.
 - **LibreWXR extras** — motion arrows, storm cells, lightning glyphs. These are
   baked into radar tiles by the server and are only available on LibreWXR

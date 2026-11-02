@@ -2,6 +2,7 @@ import {
   CloudRain,
   Layers3,
   Map as MapIcon,
+  Radar,
   Satellite,
   TriangleAlert,
   Wind,
@@ -229,6 +230,31 @@ export function LayerPanel() {
               label="Satellite opacity"
               value={settings.satelliteOpacity}
               onChange={(value) => update({ satelliteOpacity: value })}
+              min={0.15}
+              max={1}
+              step={0.05}
+            />
+          </div>
+        )}
+
+        <OverlayRow
+          icon={<Radar size={17} />}
+          title="Radar coverage"
+          description={
+            source.supportsExtensions
+              ? "Shows where radar data exists."
+              : "Requires a LibreWXR data source."
+          }
+          checked={settings.coverageEnabled}
+          onChange={(checked) => update({ coverageEnabled: checked })}
+          disabled={extensionsDisabled}
+        />
+        {settings.coverageEnabled && !extensionsDisabled && (
+          <div className="overlay-settings">
+            <SliderRow
+              label="Coverage opacity"
+              value={settings.coverageOpacity}
+              onChange={(value) => update({ coverageOpacity: value })}
               min={0.15}
               max={1}
               step={0.05}

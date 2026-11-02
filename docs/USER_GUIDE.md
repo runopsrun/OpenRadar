@@ -198,6 +198,14 @@ to the active radar time (latest satellite frame at or before the radar frame).
 - Disabled when the current source provides no satellite frames.
 - Source zoom is 6; the map overzooms above that.
 
+### Radar coverage
+
+Shows where LibreWXR has radar data, which helps tell "no rain" from "no
+coverage". It sits above satellite and below radar.
+
+- **Opacity** — 15 %–100 %, default 50 %.
+- Disabled on sources without LibreWXR extensions (RainViewer).
+
 ### Weather alerts
 
 WMO CAP alerts as a GeoJSON overlay. The row shows the number of active alerts

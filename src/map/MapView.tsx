@@ -19,6 +19,7 @@ import {
   ALERTS_LINE_LAYER_ID,
   setRadarOpacity,
   setSatelliteOpacity,
+  syncCoverageLayer,
   syncAlertsLayer,
   syncRadarLayer,
   syncSatelliteLayer,
@@ -26,6 +27,7 @@ import {
 import { useMapContext } from "@/map/MapContext";
 import {
   radarProtocolUrlTemplate,
+  COVERAGE_PROTOCOL_URL_TEMPLATE,
   satelliteProtocolUrlTemplate,
   type RadarTileOptions,
 } from "@/services/tiles";
@@ -62,6 +64,8 @@ export function MapView() {
   const baseMapId = useSettingsStore((state) => state.baseMapId);
   const radarEnabled = useSettingsStore((state) => state.radarEnabled);
   const satelliteEnabled = useSettingsStore((state) => state.satelliteEnabled);
+  const coverageEnabled = useSettingsStore((state) => state.coverageEnabled);
+  const coverageOpacity = useSettingsStore((state) => state.coverageOpacity);
   const alertsEnabled = useSettingsStore((state) => state.alertsEnabled);
   const radarOpacity = useSettingsStore((state) => state.radarOpacity);
   const satelliteOpacity = useSettingsStore((state) => state.satelliteOpacity);
@@ -286,6 +290,16 @@ export function MapView() {
     if (!map || styleEpoch === 0) return;
     setSatelliteOpacity(map, satelliteOpacity);
   }, [map, styleEpoch, satelliteOpacity, satelliteEnabled]);
+
+  /* ------------------------------------------------------ coverage overlay */
+  useEffect(() => {
+    if (!map || styleEpoch === 0) return;
+    syncCoverageLayer(map, {
+      enabled: coverageEnabled,
+      tileUrlTemplate: COVERAGE_PROTOCOL_URL_TEMPLATE,
+      opacity: coverageOpacity,
+    });
+  }, [map, styleEpoch, coverageEnabled, coverageOpacity]);
 
   /* ----------------------------------------------------------- alert layer */
   useEffect(() => {

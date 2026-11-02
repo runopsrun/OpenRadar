@@ -100,6 +100,8 @@ alert counts change constantly; assert *behaviour*, not exact numbers.
 | 21 | Toggle snow mask | New tiles reflect the flag. |
 | 22 | Enable satellite | Clouds appear beneath radar; toggle disabled if no frames. |
 | 23 | Change satellite opacity | In-place change. |
+| 23a | Enable radar coverage | Coverage tiles appear above satellite, below radar; toggle disabled on RainViewer. |
+| 23b | Change coverage opacity | In-place change. |
 | 24 | Enable alerts | Polygons appear; row shows a count. |
 | 25 | Click an alert polygon | Popup shows severity, expiry, title, regions, description, link. |
 | 26 | Pan with alerts on | Refetch after ~700 ms; no empty flash. |

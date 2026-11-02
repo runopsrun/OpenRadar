@@ -19,6 +19,26 @@ self-hosting, development, testing, and troubleshooting — starts at
 
 ---
 
+## Screenshots
+
+The default dark theme on the continental US view, with animated LibreWXR radar
+and the observation/nowcast timeline:
+
+![OpenRadar main view: animated radar over the United States with the timeline docked at the bottom](docs/images/main-view.webp)
+
+| Layers & overlays | Settings |
+| --- | --- |
+| ![Layers panel with radar, satellite, alerts, LibreWXR extras, and base-map controls](docs/images/layers-panel.webp) | ![Settings panel with theme, data source, animation, and default-location controls](docs/images/settings-panel.webp) |
+
+The About dialog collects data-source licences and the keyboard shortcut list:
+
+![About dialog listing data sources, licences, and keyboard shortcuts](docs/images/about-dialog.webp)
+
+Screenshots are captured from the running app with live public data, so frame
+counts, alert coverage, and timestamps will differ from what you see.
+
+---
+
 ## Features
 
 - **Animated radar** — observed frames plus optional nowcast, with play/pause,

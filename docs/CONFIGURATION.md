@@ -72,7 +72,9 @@ Zustand `persist` wraps the state:
       "latitude": 39.8283,
       "zoom": 4.2
     },
-    "recentPlaces": []
+    "recentPlaces": [],
+    "localRadarMiles": 50,
+    "locationPromptDismissed": false
   },
   "version": 1
 }
@@ -190,6 +192,14 @@ the status pill, timeline, Settings, `R`, and the tray.
 Use **Settings → Default location → Use current view** to save the map’s current
 centre and zoom. The default view is not overwritten by normal panning.
 
+| Key | Type | Default | Allowed |
+| --- | --- | --- | --- |
+| `localRadarMiles` | number | `50` | 25, 50, 100 |
+| `locationPromptDismissed` | boolean | `false` | — |
+
+`localRadarMiles` is the radius framed by the location prompt, the crosshair
+control, and city search. Other values are discarded on load.
+
 ### 2.6 Recent places
 
 | Key | Type | Default | Limit |
@@ -203,12 +213,14 @@ Each entry:
   "id": "nominatim-place-id",
   "name": "Chicago",
   "latitude": 41.85,
-  "longitude": -87.65
+  "longitude": -87.65,
+  "localRadar": true
 }
 ```
 
-Entries are validated on load; malformed items are dropped. Selecting a recent
-place flies to zoom 10.
+Entries are validated on load; malformed items are dropped. `localRadar` is
+optional. When it is not `false`, selecting the place frames `localRadarMiles`.
+Regional places fly to zoom 8.
 
 ---
 

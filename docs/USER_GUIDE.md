@@ -313,8 +313,10 @@ overwrite it.
 Type at least two characters. Requests are debounced by 550 ms, cached for the
 session (60 queries), and limited to six results. Results come from Nominatim.
 
-- Selecting a result flies to a zoom appropriate to the place type:
-  country 4, boundary 8, city/town 10, address/building 15, other 12.
+- Selecting a city, town, or other local place frames the **local radar
+  radius** (25, 50, or 100 miles; default 50) and draws that circle on the map.
+- Countries, states, and street addresses still fly to a zoom for that place:
+  country 4, boundary 8, address/building 15.
 - A marker with the display name is placed at the result.
 - The place is added to **Recent places** (maximum five).
 - Empty results show “No places found.”; network failures show an inline error.
@@ -323,20 +325,34 @@ The search box footer credits Nominatim and OpenStreetMap.
 
 ### Recent places
 
-Focus the empty search box to see recent places. Selecting one flies to zoom 10
-and restores the marker. Recent places are persisted in settings.
+Focus the empty search box to see recent places. A local place frames the
+current radar radius and restores the marker. A regional place flies to zoom 8.
+Recent places are persisted in settings.
+
+### Local radar
+
+A prompt in the lower-left asks to use your location. Pick **25 mi**, **50 mi**,
+or **100 mi** (50 is the default), then **Use my location**. The map fits that
+radius around you and draws a range ring. **Not now** hides the prompt; the
+choice is remembered.
+
+After a local view is open, the prompt shrinks to the active radius. Change the
+radius to refit, or clear the ring. The same radius is in **Settings → Local
+radar radius**. The crosshair control uses it too.
 
 ### Geolocation
 
-The crosshair control:
+The crosshair control and the local-radar prompt:
 
-- asks for high accuracy with a 12 s timeout and a 60 s maximum cache age;
-- flies to the coordinate at the greater of the current zoom and 10;
-- places a marker labelled with the accuracy radius;
-- shows a success toast, or a specific message for permission denial, timeout,
-  or unavailable location.
+- ask the desktop window for location, with a 12 s timeout and a 60 s maximum
+  cache age;
+- fit the map to the selected radius around the coordinate;
+- place a marker labelled with the accuracy.
 
-Location is not persisted.
+If device location is blocked, the same controls use an approximate network
+location, label the marker as approximate, and say so in a toast. The
+coordinate is not persisted. The radius and whether the prompt was dismissed
+are persisted.
 
 ---
 

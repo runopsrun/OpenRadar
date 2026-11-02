@@ -57,6 +57,7 @@ first-party server.
 | OpenFreeMap | Basemap selected | Style and vector-tile requests | IP address, user agent, tile coordinates |
 | Esri ArcGIS | Satellite basemap selected | Raster tile requests | IP address, user agent, tile coordinates |
 | Nominatim | Place search | Query text, language, result limit | IP address, user agent, query text |
+| geojs.io | Only if device location is blocked | A request with no query | IP address, user agent; response is a city-scale coordinate |
 | OSM tile server | Vector style fallback only | Raster tile requests | IP address, user agent, tile coordinates |
 
 Not sent anywhere:
@@ -69,11 +70,16 @@ Not sent anywhere:
 
 ### 2.1 Precise location
 
-The crosshair button requests a one-shot high-accuracy position. The coordinate:
+The crosshair button requests a one-shot device position. The desktop window
+allows that permission. The coordinate:
 
 - moves the map;
 - places a temporary marker labelled with the accuracy radius;
 - is **not** written to settings, logs, or any server by OpenRadar.
+
+If the system still blocks device location, OpenRadar asks geojs.io for a
+city-scale network location and labels the marker as approximate. That
+coordinate is also kept local after the response arrives.
 
 However, the radar/basemap requests that follow reveal the approximate viewport
 through tile coordinates. That is inherent to any map client. If location

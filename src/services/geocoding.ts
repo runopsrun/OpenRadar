@@ -110,3 +110,49 @@ export async function searchPlaces(
 export function clearSearchCache(): void {
   searchCache.clear();
 }
+
+const CLOSE_PLACE_TYPES = new Set([
+  "house",
+  "building",
+  "residential",
+  "apartments",
+  "address",
+]);
+
+const LOCAL_PLACE_TYPES = new Set([
+  "city",
+  "town",
+  "village",
+  "hamlet",
+  "municipality",
+  "suburb",
+  "neighbourhood",
+  "neighborhood",
+  "quarter",
+  "locality",
+  "postcode",
+  "postal_code",
+  "county",
+]);
+
+/** Longest side of a Nominatim bounding box, in approximate miles. */
+function spanMiles(place: PlaceResult): number | null {
+  if (!place.boundingBox) return null;
+  const [south, north, west, east] = place.boundingBox;
+  const midLatitude = ((south + north) / 2) * (Math.PI / 180);
+  const height = Math.abs(north - south) * 69;
+  const width = Math.abs(east - west) * 69 * Math.cos(midLatitude);
+  return Math.max(height, width);
+}
+
+/**
+ * City-scale places open as a local radar view. Countries, states, and street
+ * addresses keep their own zoom.
+ */
+export function framesLocalRadar(place: PlaceResult): boolean {
+  if (place.type === "country") return false;
+  if (place.type && CLOSE_PLACE_TYPES.has(place.type)) return false;
+  if (place.type && LOCAL_PLACE_TYPES.has(place.type)) return true;
+  const span = spanMiles(place);
+  return span != null && span <= 80;
+}

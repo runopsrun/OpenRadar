@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { DEFAULT_LOCAL_RADAR_MILES, LOCAL_RADAR_RADIUS_OPTIONS } from "@/config/constants";
 import { settingsStorage } from "@/services/storage";
 import type {
   AppSettings,
@@ -45,6 +46,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
     zoom: 4.2,
   },
   recentPlaces: [],
+  localRadarMiles: DEFAULT_LOCAL_RADAR_MILES,
+  locationPromptDismissed: false,
 };
 
 interface SettingsStore extends AppSettings {
@@ -81,18 +84,29 @@ function validView(value: unknown): MapViewState | null {
 
 function validRecentPlaces(value: unknown): SavedPlace[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .filter((item): item is SavedPlace => {
-      if (!item || typeof item !== "object") return false;
-      const place = item as Record<string, unknown>;
-      return (
-        typeof place.id === "string" &&
-        typeof place.name === "string" &&
-        Number.isFinite(place.latitude) &&
-        Number.isFinite(place.longitude)
-      );
-    })
-    .slice(0, 5);
+  const places: SavedPlace[] = [];
+  for (const item of value) {
+    if (!item || typeof item !== "object") continue;
+    const place = item as Record<string, unknown>;
+    if (
+      typeof place.id !== "string" ||
+      typeof place.name !== "string" ||
+      !Number.isFinite(place.latitude) ||
+      !Number.isFinite(place.longitude)
+    ) {
+      continue;
+    }
+    const saved: SavedPlace = {
+      id: place.id,
+      name: place.name,
+      latitude: Number(place.latitude),
+      longitude: Number(place.longitude),
+    };
+    if (typeof place.localRadar === "boolean") saved.localRadar = place.localRadar;
+    places.push(saved);
+    if (places.length >= 5) break;
+  }
+  return places;
 }
 
 /**
@@ -160,6 +174,15 @@ function sanitizePersisted(value: unknown): Partial<AppSettings> {
   if (Array.isArray(raw.recentPlaces)) {
     out.recentPlaces = validRecentPlaces(raw.recentPlaces);
   }
+  if (
+    typeof raw.localRadarMiles === "number" &&
+    (LOCAL_RADAR_RADIUS_OPTIONS as readonly number[]).includes(raw.localRadarMiles)
+  ) {
+    out.localRadarMiles = raw.localRadarMiles;
+  }
+  if (typeof raw.locationPromptDismissed === "boolean") {
+    out.locationPromptDismissed = raw.locationPromptDismissed;
+  }
 
   return out;
 }
@@ -211,6 +234,8 @@ export const useSettingsStore = create<SettingsStore>()(
         autoRefreshMinutes: state.autoRefreshMinutes,
         defaultView: state.defaultView,
         recentPlaces: state.recentPlaces,
+        localRadarMiles: state.localRadarMiles,
+        locationPromptDismissed: state.locationPromptDismissed,
       }),
       merge: (persisted, current) => ({
         ...current,

@@ -21,6 +21,10 @@ export const TILE_TIMEOUT_MS = 25_000;
 export const ALERT_REFRESH_MS = 5 * 60 * 1000;
 export const NOMINATIM_DEBOUNCE_MS = 550;
 
+/** Radii offered for the local-radar view. The default frames a 50-mile radius. */
+export const LOCAL_RADAR_RADIUS_OPTIONS = [25, 50, 100] as const;
+export const DEFAULT_LOCAL_RADAR_MILES = 50;
+
 export const ANIMATION_SPEED_OPTIONS = [
   { label: "Slow", value: 1100 },
   { label: "Normal", value: 650 },

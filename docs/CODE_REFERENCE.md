@@ -110,7 +110,7 @@ type BaseMapId = "dark" | "light" | "streets" | "satellite";
 type LightningStyle = "off" | "dots" | "bolts";
 
 interface MapViewState { longitude: number; latitude: number; zoom: number }
-interface SavedPlace { id: string; name: string; latitude: number; longitude: number }
+interface SavedPlace { id: string; name: string; latitude: number; longitude: number; localRadar?: boolean }
 
 interface AppSettings {
   theme; baseMapId;
@@ -119,7 +119,7 @@ interface AppSettings {
   radarOpacity; satelliteOpacity; coverageOpacity; colorScheme; smooth; snow;
   lightning; stormCells; motionArrows;
   animationSpeedMs; loop; includeNowcast; autoRefreshMinutes;
-  defaultView; recentPlaces;
+  defaultView; recentPlaces; localRadarMiles; locationPromptDismissed;
 }
 ```
 
@@ -409,6 +409,7 @@ the last frame is selected.
 | `map` | `MapLibreMap \| null` | Set after MapLibre `load`. |
 | `setMap` | `(map) => void` | Called by `MapView`. |
 | `flyTo` | `(lon, lat, zoom?) => void` | 1100 ms flight; default zoom is `max(current, 9)`. |
+| `fitToRadius` | `(lon, lat, radiusMiles) => void` | Fits a mile-radius bounds around the point. |
 | `showMarker` | `(lon, lat, label) => void` | Replaces the previous marker; opens a popup. |
 | `clearMarker` | `() => void` | |
 | `getView` | `() => MapViewState \| null` | Current centre and zoom. |

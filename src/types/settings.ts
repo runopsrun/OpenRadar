@@ -16,6 +16,11 @@ export interface SavedPlace {
   name: string;
   latitude: number;
   longitude: number;
+  /**
+   * False for regional results such as a country or state. Missing means the
+   * place should open in the local-radar radius.
+   */
+  localRadar?: boolean;
 }
 
 export interface AppSettings {
@@ -55,4 +60,8 @@ export interface AppSettings {
   /* Location */
   defaultView: MapViewState;
   recentPlaces: SavedPlace[];
+  /** Radius, in miles, framed by the location prompt and the locate control. */
+  localRadarMiles: number;
+  /** True after the local-radar prompt is used or dismissed. */
+  locationPromptDismissed: boolean;
 }

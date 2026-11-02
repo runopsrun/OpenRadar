@@ -21,6 +21,7 @@ import {
   setSatelliteOpacity,
   syncCoverageLayer,
   syncAlertsLayer,
+  syncLocalAreaLayer,
   syncRadarLayer,
   syncSatelliteLayer,
 } from "@/map/layers";
@@ -34,7 +35,7 @@ import {
 import { useAlertsStore } from "@/store/alertsStore";
 import { useRadarStore } from "@/store/radarStore";
 import { useSettingsStore } from "@/store/settingsStore";
-import { toast } from "@/store/uiStore";
+import { toast, useUiStore } from "@/store/uiStore";
 import { satelliteFrameForTime } from "@/utils/geo";
 
 // Vite pre-bundles the MapLibre entry point, which breaks the package-relative
@@ -79,6 +80,7 @@ export function MapView() {
   const source = useResolvedDataSource();
   const metadata = useRadarStore((state) => state.metadata);
   const alertsData = useAlertsStore((state) => state.data);
+  const localArea = useUiStore((state) => state.localArea);
 
   const { frames, currentFrame } = useTimeline();
 
@@ -300,6 +302,12 @@ export function MapView() {
       opacity: coverageOpacity,
     });
   }, [map, styleEpoch, coverageEnabled, coverageOpacity]);
+
+  /* ---------------------------------------------------- local radar radius */
+  useEffect(() => {
+    if (!map || styleEpoch === 0) return;
+    syncLocalAreaLayer(map, localArea);
+  }, [map, styleEpoch, localArea]);
 
   /* ----------------------------------------------------------- alert layer */
   useEffect(() => {

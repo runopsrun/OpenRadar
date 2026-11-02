@@ -8,7 +8,8 @@ import {
   RotateCcw,
   Sun,
 } from "lucide-react";
-import { APP_VERSION } from "@/config/constants";
+import { APP_VERSION, LOCAL_RADAR_RADIUS_OPTIONS } from "@/config/constants";
+import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import {
   DATA_SOURCE_PRESETS,
   normalizeBaseUrl,
@@ -38,6 +39,7 @@ export function SettingsPanel() {
   const reset = useSettingsStore((state) => state.reset);
   const source = useResolvedDataSource();
   const { getView, flyTo, map } = useMapContext();
+  const { setRadiusMiles } = useDeviceLocation();
 
   const metadata = useRadarStore((state) => state.metadata);
   const status = useRadarStore((state) => state.status);
@@ -323,9 +325,23 @@ export function SettingsPanel() {
             Go to default
           </button>
         </div>
+        <label className="field">
+          <span className="field__label">Local radar radius</span>
+          <SelectField
+            value={settings.localRadarMiles}
+            label="Local radar radius"
+            onChange={(value) => setRadiusMiles(Number(value))}
+          >
+            {LOCAL_RADAR_RADIUS_OPTIONS.map((miles) => (
+              <option key={miles} value={miles}>
+                {miles} miles
+              </option>
+            ))}
+          </SelectField>
+        </label>
         <p className="panel-note">
-          The map opens here next time. Search results and the locate button are
-          always one click away.
+          The map opens on the default view. Your location and city searches
+          frame this radius and draw it on the radar.
         </p>
       </section>
 

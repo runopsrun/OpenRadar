@@ -14,8 +14,83 @@ export interface TileCoordinate {
 const MAX_MERCATOR_LAT = 85.05112878;
 const WORLD_TILES = 1;
 
+const EARTH_RADIUS_MILES = 3958.7613;
+
 export function clampLatitude(latitude: number): number {
   return Math.min(MAX_MERCATOR_LAT, Math.max(-MAX_MERCATOR_LAT, latitude));
+}
+
+export function wrapLongitude(longitude: number): number {
+  const wrapped = (((longitude + 180) % 360) + 360) % 360 - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
+
+/** Point reached by travelling `distanceMiles` along `bearingDegrees` (0 = north). */
+export function destinationPoint(
+  latitude: number,
+  longitude: number,
+  bearingDegrees: number,
+  distanceMiles: number,
+): { latitude: number; longitude: number } {
+  const distance = distanceMiles / EARTH_RADIUS_MILES;
+  const bearing = (bearingDegrees * Math.PI) / 180;
+  const lat1 = (latitude * Math.PI) / 180;
+  const lon1 = (longitude * Math.PI) / 180;
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(distance) +
+      Math.cos(lat1) * Math.sin(distance) * Math.cos(bearing),
+  );
+  const lon2 =
+    lon1 +
+    Math.atan2(
+      Math.sin(bearing) * Math.sin(distance) * Math.cos(lat1),
+      Math.cos(distance) - Math.sin(lat1) * Math.sin(lat2),
+    );
+
+  return {
+    latitude: clampLatitude((lat2 * 180) / Math.PI),
+    longitude: wrapLongitude((lon2 * 180) / Math.PI),
+  };
+}
+
+/** Bounding box that encloses a circle of `radiusMiles` around a point. */
+export function boundsForRadiusMiles(
+  latitude: number,
+  longitude: number,
+  radiusMiles: number,
+): Bounds {
+  const north = destinationPoint(latitude, longitude, 0, radiusMiles);
+  const east = destinationPoint(latitude, longitude, 90, radiusMiles);
+  const south = destinationPoint(latitude, longitude, 180, radiusMiles);
+  const west = destinationPoint(latitude, longitude, 270, radiusMiles);
+  return {
+    west: west.longitude,
+    south: south.latitude,
+    east: east.longitude,
+    north: north.latitude,
+  };
+}
+
+/** Closed GeoJSON ring for a range circle. The first and last positions match. */
+export function circleCoordinates(
+  latitude: number,
+  longitude: number,
+  radiusMiles: number,
+  steps = 72,
+): Array<[number, number]> {
+  const ring: Array<[number, number]> = [];
+  for (let index = 0; index < steps; index += 1) {
+    const point = destinationPoint(
+      latitude,
+      longitude,
+      (index / steps) * 360,
+      radiusMiles,
+    );
+    ring.push([point.longitude, point.latitude]);
+  }
+  const first = ring[0];
+  if (first) ring.push([first[0], first[1]]);
+  return ring;
 }
 
 export function lonToTileX(longitude: number, zoom: number): number {

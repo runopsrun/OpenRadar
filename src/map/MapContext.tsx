@@ -14,11 +14,13 @@ import {
   type Map as MapLibreMap,
 } from "maplibre-gl";
 import type { MapViewState } from "@/types/settings";
+import { boundsForRadiusMiles } from "@/utils/geo";
 
 interface MapContextValue {
   map: MapLibreMap | null;
   setMap: (map: MapLibreMap | null) => void;
   flyTo: (longitude: number, latitude: number, zoom?: number) => void;
+  fitToRadius: (longitude: number, latitude: number, radiusMiles: number) => void;
   showMarker: (longitude: number, latitude: number, label: string) => void;
   clearMarker: () => void;
   getView: () => MapViewState | null;
@@ -48,6 +50,26 @@ export function MapProvider({ children }: { children: ReactNode }) {
         duration: 1_100,
         essential: true,
       });
+    },
+    [map],
+  );
+
+  const fitToRadius = useCallback(
+    (longitude: number, latitude: number, radiusMiles: number) => {
+      if (!map || !(radiusMiles > 0)) return;
+      const bounds = boundsForRadiusMiles(latitude, longitude, radiusMiles);
+      map.fitBounds(
+        [
+          [bounds.west, bounds.south],
+          [bounds.east, bounds.north],
+        ],
+        {
+          padding: { top: 92, bottom: 176, left: 36, right: 68 },
+          duration: 1_100,
+          essential: true,
+          maxZoom: 12,
+        },
+      );
     },
     [map],
   );
@@ -87,8 +109,8 @@ export function MapProvider({ children }: { children: ReactNode }) {
   useEffect(() => clearMarker, [clearMarker]);
 
   const value = useMemo<MapContextValue>(
-    () => ({ map, setMap, flyTo, showMarker, clearMarker, getView }),
-    [map, setMap, flyTo, showMarker, clearMarker, getView],
+    () => ({ map, setMap, flyTo, fitToRadius, showMarker, clearMarker, getView }),
+    [map, setMap, flyTo, fitToRadius, showMarker, clearMarker, getView],
   );
 
   return <MapContext.Provider value={value}>{children}</MapContext.Provider>;

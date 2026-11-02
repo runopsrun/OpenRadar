@@ -5,6 +5,7 @@ use base64::{engine::general_purpose::STANDARD, Engine as _};
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    webview::{PermissionKind, PermissionResponse},
     AppHandle, Emitter, Manager,
 };
 
@@ -190,6 +191,13 @@ fn build_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        // WebKitGTK and WebView2 deny geolocation unless the app answers the
+        // permission request. Only location is allowed; everything else keeps
+        // the webview default.
+        .on_permission_request(|_webview, kind| match kind {
+            PermissionKind::Geolocation => PermissionResponse::Allow,
+            _ => PermissionResponse::Default,
+        })
         .setup(|app| {
             build_tray(app)?;
             Ok(())

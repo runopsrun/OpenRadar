@@ -10,6 +10,7 @@ import type {
 } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
 import type { MapViewState } from "@/types/settings";
+import { circleCoordinates } from "@/utils/geo";
 
 export const RADAR_SOURCE_ID = "openradar-radar";
 export const RADAR_LAYER_ID = "openradar-radar-layer";
@@ -20,6 +21,9 @@ export const COVERAGE_LAYER_ID = "openradar-coverage-layer";
 export const ALERTS_SOURCE_ID = "openradar-alerts";
 export const ALERTS_FILL_LAYER_ID = "openradar-alerts-fill";
 export const ALERTS_LINE_LAYER_ID = "openradar-alerts-line";
+export const LOCAL_AREA_SOURCE_ID = "openradar-local-area";
+export const LOCAL_AREA_FILL_LAYER_ID = "openradar-local-area-fill";
+export const LOCAL_AREA_LINE_LAYER_ID = "openradar-local-area-line";
 
 const ALERT_SEVERITY_EXPRESSION: ExpressionSpecification = [
   "match",
@@ -59,6 +63,8 @@ export function enforceOverlayOrder(map: MapLibreMap): void {
     RADAR_LAYER_ID,
     ALERTS_FILL_LAYER_ID,
     ALERTS_LINE_LAYER_ID,
+    LOCAL_AREA_FILL_LAYER_ID,
+    LOCAL_AREA_LINE_LAYER_ID,
   ]) {
     if (map.getLayer(id)) map.moveLayer(id, before);
   }
@@ -273,6 +279,84 @@ export function syncAlertsLayer(map: MapLibreMap, input: AlertsLayerInput): void
         "line-color": ALERT_SEVERITY_EXPRESSION,
         "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.7, 9, 1.6],
         "line-opacity": 0.9,
+      },
+    };
+    map.addLayer(line, before);
+  }
+
+  enforceOverlayOrder(map);
+}
+
+export interface LocalAreaLayerInput {
+  longitude: number;
+  latitude: number;
+  radiusMiles: number;
+}
+
+export function syncLocalAreaLayer(
+  map: MapLibreMap,
+  area: LocalAreaLayerInput | null,
+): void {
+  if (!area || !(area.radiusMiles > 0)) {
+    if (map.getLayer(LOCAL_AREA_LINE_LAYER_ID)) {
+      map.removeLayer(LOCAL_AREA_LINE_LAYER_ID);
+    }
+    if (map.getLayer(LOCAL_AREA_FILL_LAYER_ID)) {
+      map.removeLayer(LOCAL_AREA_FILL_LAYER_ID);
+    }
+    if (map.getSource(LOCAL_AREA_SOURCE_ID)) {
+      map.removeSource(LOCAL_AREA_SOURCE_ID);
+    }
+    return;
+  }
+
+  const data: FeatureCollection = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: { radiusMiles: area.radiusMiles },
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            circleCoordinates(area.latitude, area.longitude, area.radiusMiles),
+          ],
+        },
+      },
+    ],
+  };
+
+  const source = map.getSource(LOCAL_AREA_SOURCE_ID) as GeoJSONSource | undefined;
+  if (!source) {
+    map.addSource(LOCAL_AREA_SOURCE_ID, { type: "geojson", data });
+  } else {
+    source.setData(data);
+  }
+
+  const before = firstSymbolLayerId(map);
+
+  if (!map.getLayer(LOCAL_AREA_FILL_LAYER_ID)) {
+    const fill: FillLayerSpecification = {
+      id: LOCAL_AREA_FILL_LAYER_ID,
+      type: "fill",
+      source: LOCAL_AREA_SOURCE_ID,
+      paint: {
+        "fill-color": "#38d5ff",
+        "fill-opacity": 0.07,
+      },
+    };
+    map.addLayer(fill, before);
+  }
+
+  if (!map.getLayer(LOCAL_AREA_LINE_LAYER_ID)) {
+    const line: LineLayerSpecification = {
+      id: LOCAL_AREA_LINE_LAYER_ID,
+      type: "line",
+      source: LOCAL_AREA_SOURCE_ID,
+      paint: {
+        "line-color": "#38d5ff",
+        "line-width": 2,
+        "line-opacity": 0.95,
       },
     };
     map.addLayer(line, before);

@@ -11,6 +11,7 @@ import { MapView } from "@/map/MapView";
 import { TopBar } from "@/components/TopBar";
 import { SidePanel } from "@/components/SidePanel";
 import { Timeline } from "@/components/Timeline";
+import { LocationPrompt } from "@/components/LocationPrompt";
 import { MapControls } from "@/components/MapControls";
 import { AttributionBar } from "@/components/AttributionBar";
 import { StatusBanner } from "@/components/StatusBanner";
@@ -45,6 +46,7 @@ function AppShell() {
       <main className="map-stage" aria-label="Weather map">
         <MapView />
         <StatusBanner />
+        <LocationPrompt />
         <MapControls />
         <ErrorState />
         <AttributionBar />

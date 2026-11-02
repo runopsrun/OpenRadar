@@ -14,9 +14,11 @@ import {
   X,
 } from "lucide-react";
 import { NOMINATIM_DEBOUNCE_MS } from "@/config/constants";
+import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { useMapContext } from "@/map/MapContext";
-import { searchPlaces, type PlaceResult } from "@/services/geocoding";
+import { framesLocalRadar, searchPlaces, type PlaceResult } from "@/services/geocoding";
 import { useSettingsStore } from "@/store/settingsStore";
+import { useUiStore } from "@/store/uiStore";
 import type { SavedPlace } from "@/types/settings";
 import { cx } from "@/utils/cx";
 import { getErrorMessage, isAbortError } from "@/utils/errors";
@@ -47,6 +49,8 @@ function useOutsideClick(
 
 export function SearchBox() {
   const { flyTo, showMarker } = useMapContext();
+  const { frameLocalRadar, radiusMiles } = useDeviceLocation();
+  const setLocalArea = useUiStore((state) => state.setLocalArea);
   const recentPlaces = useSettingsStore((state) => state.recentPlaces);
   const addRecentPlace = useSettingsStore((state) => state.addRecentPlace);
 
@@ -109,13 +113,25 @@ export function SearchBox() {
   }, [query]);
 
   const choosePlace = (place: PlaceResult) => {
-    flyTo(place.longitude, place.latitude, zoomForPlace(place));
-    showMarker(place.longitude, place.latitude, place.displayName);
+    const local = framesLocalRadar(place);
+    if (local) {
+      frameLocalRadar(
+        place.longitude,
+        place.latitude,
+        radiusMiles,
+        place.displayName,
+      );
+    } else {
+      setLocalArea(null);
+      flyTo(place.longitude, place.latitude, zoomForPlace(place));
+      showMarker(place.longitude, place.latitude, place.displayName);
+    }
     addRecentPlace({
       id: place.id,
       name: place.name,
       latitude: place.latitude,
       longitude: place.longitude,
+      localRadar: local,
     });
     setQuery(place.name);
     setOpen(false);
@@ -123,8 +139,18 @@ export function SearchBox() {
   };
 
   const chooseRecent = (place: SavedPlace) => {
-    flyTo(place.longitude, place.latitude, 10);
-    showMarker(place.longitude, place.latitude, place.name);
+    if (place.localRadar === false) {
+      setLocalArea(null);
+      flyTo(place.longitude, place.latitude, 8);
+      showMarker(place.longitude, place.latitude, place.name);
+    } else {
+      frameLocalRadar(
+        place.longitude,
+        place.latitude,
+        radiusMiles,
+        place.name,
+      );
+    }
     setQuery(place.name);
     setOpen(false);
     inputRef.current?.blur();

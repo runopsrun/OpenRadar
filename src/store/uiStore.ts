@@ -2,6 +2,13 @@ import { create } from "zustand";
 
 export type PanelId = "layers" | "settings";
 
+export interface LocalRadarArea {
+  longitude: number;
+  latitude: number;
+  radiusMiles: number;
+  label: string;
+}
+
 export type ToastTone = "info" | "success" | "warning" | "error";
 
 export interface ToastMessage {
@@ -15,9 +22,11 @@ interface UiStore {
   panel: PanelId | null;
   aboutOpen: boolean;
   toasts: ToastMessage[];
+  localArea: LocalRadarArea | null;
   setPanel: (panel: PanelId | null) => void;
   togglePanel: (panel: PanelId) => void;
   setAboutOpen: (open: boolean) => void;
+  setLocalArea: (area: LocalRadarArea | null) => void;
   pushToast: (toast: Omit<ToastMessage, "id"> & { id?: number }) => number;
   dismissToast: (id: number) => void;
 }
@@ -32,6 +41,7 @@ export const useUiStore = create<UiStore>((set, get) => ({
   panel: null,
   aboutOpen: false,
   toasts: [],
+  localArea: null,
 
   setPanel: (panel) => set({ panel }),
 
@@ -39,6 +49,8 @@ export const useUiStore = create<UiStore>((set, get) => ({
     set((state) => ({ panel: state.panel === panel ? null : panel })),
 
   setAboutOpen: (open) => set({ aboutOpen: open }),
+
+  setLocalArea: (area) => set({ localArea: area }),
 
   pushToast: (toast) => {
     const id = toast.id ?? nextToastId++;

@@ -126,12 +126,12 @@ alert counts change constantly; assert *behaviour*, not exact numbers.
 | --- | --- | --- |
 | 36 | Type 1 character | No request. |
 | 37 | Type a city name | Debounced request; up to 6 results. |
-| 38 | Select a result | Map flies to an appropriate zoom; marker and popup appear. |
+| 38 | Select a city result | Map frames the local radar radius (default 50 miles) and draws a range ring; marker and popup appear. |
 | 39 | Search again | Previous marker is replaced, not duplicated. |
-| 40 | Open search with an empty query | Recent places appear; selecting one flies to zoom 10. |
+| 40 | Open search with an empty query | Recent places appear; selecting a local one frames the radar radius. |
 | 41 | Search nonsense | “No places found.” |
 | 42 | Block Nominatim | Inline error; map and radar remain usable. |
-| 43 | Press the locate button | Permission prompt; on success, fly to location and marker with accuracy. |
+| 43 | Press the locate button or “Use my location” | Permission prompt; on success, the map frames the selected radius with a range ring and an accuracy marker. |
 | 44 | Deny permission | Specific error toast; no crash. |
 
 ### 3.6 Settings and persistence
